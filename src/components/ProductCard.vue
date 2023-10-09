@@ -1,51 +1,84 @@
 <template>
-  <div class="p-card" v-if="productStatus.isLoading">Идёт загрузка товара...</div>
+  <!-- <div class="p-card" v-if="productStatus.isLoading">Идёт загрузка товара...</div>
   <div class="p-card" v-else-if="productStatus.isFailed">Не удалось загрузить данные о товаре</div>
-  <div class="p-card" v-else>
-    <img class="p-card__img" :src="product.image" alt="Заголовок" draggable="false">
-    <h3 class="p-card__title">{{ product.title }}</h3>
-    <div class="p-card__category">{{ product.category }}</div>
+  <div class="p-card" v-else> -->
+  <div class="p-card">
+    <button class="btn p-card-btn p-card__edit-btn" @click="startEditingProduct"></button>
+    <button class="btn p-card-btn p-card__delete-btn"></button>
+    <img class="p-card__img" :src="productData.image" alt="Заголовок" draggable="false">
+    <h4 class="p-card__title">{{ productData.title }}</h4>
+    <div class="p-card__category">{{ productData.category }}</div>
     <div class="p-card__rating">
-      <span class="p-card__score">{{ rating }}</span>
-      <span class="p-card__votes-amount">Количество голосов: {{ product.rating.count }}</span>
+      <span class="p-card__score">{{ productData.rating.rate }}</span>
+      <span class="p-card__votes-amount">Количество голосов: {{ productData.rating.count }}</span>
     </div>
-    <p class="p-card__desc">{{ product.description }}</p>
-    <div class="p-card__price">{{ product.pricePretty }}</div>
+    <p class="p-card__desc">{{ productData.description }}</p>
+    <div class="p-card__price">{{ productData.pricePretty }}</div>
   </div>
 </template>
 
 <script>
 import { defineComponent } from 'vue'
-import useProduct from '@/hooks/useProduct'
+// import useProduct from '@/hooks/useProduct'
 
 export default defineComponent({
   props: {
-    // product: { type: Object, required: true },
+    productData: { type: Object, required: true },
     productId: { type: [Number, String], required: true },
-    columnId: { type: [Number, String], required: true }
+    columnId: { type: [Number, String], required: true },
+    editedProduct: { isOpened: { type: Boolean }, editedProductId: { type: Number } }
     // currentColumn: { type: String, required: true }
   },
-  setup (props) {
-    const {
-      product,
-      rating,
-      status: productStatus,
-      fetchProduct
-    } = useProduct()
+  setup (props, { emit: $emit }) {
+    // const {
+    //   product,
+    //   rating,
+    //   status: productStatus,
+    //   // fetchProduct,
+    //   getProduct
+    // } = useProduct()
 
-    fetchProduct(props.productId, props.columnId)
+    // fetchProduct(props.productId, props.columnId)
+    // getProduct(props.productId)
+
+    const startEditingProduct = () => {
+      console.log(true)
+      console.log(props.productId)
+
+      $emit('update:editedProduct', { isOpened: true, editedProductId: props.productId })
+    }
 
     return {
-      product,
-      rating,
-      productStatus
+      // productD: props.productData,
+      // product,
+      // rating,
+      // productStatus,
+      startEditingProduct
     }
   }
 })
 </script>
 
 <style scoped lang="scss">
+
+  .btn {
+    border: none;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    transition: all .2s ease-in-out;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    &:active {
+      transform: scale(.9);
+    }
+  }
   .p-card {
+    position: relative;
     box-sizing: border-box;
     width: 90%;
     max-width: 100%;
@@ -54,10 +87,28 @@ export default defineComponent({
     border: 1px solid red;
     border-radius: 20px;
 
+    &__edit-btn {
+      right: 45px;
+      background-image: url(../assets/edit.svg);
+    }
+
+    &__delete-btn {
+      right: 10px;
+      background-image: url(../assets/close.svg);
+    }
+
     &__img {
       width: 100%;
     }
   }
+
+  .p-card-btn {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    top: 10px;
+  }
+
   .yellow {
     background-color: yellow;
   }

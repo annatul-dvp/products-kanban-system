@@ -6,58 +6,61 @@
     <div v-for="column in columnsList" :key="column.id"
       @drop="onDrop($event, column.id)" class="droppable products-board__column"
       @dragover.prevent @dragenter.prevent>
-      <ProductCard v-for="(product) in this.$store.state.productsInfo.filter(p => p.columnId === column.id)"
-        :key="product.id" :productId="product.id" :columnId="product.columnId"
+      <h3>{{ column.name }}</h3>
+      <ProductCard v-for="(product) in $store.state.productsInfo.filter(p => p.columnId === column.id)"
+        :key="product.id" :productData="product" :productId="product.id" v-model:editedProduct= "editedProduct"
         @dragstart="onDragStart($event, product.id)"
         :class="column.cardsClass" draggable="true"/>
     </div>
-    <!-- <div class="products-board__column" >
-      <ProductCard v-for="(product) in this.$store.state.productsInfo" :key="product.id" :productId="product.id" :columnId="product.columnId"
-      :currentColumn="columnsList.firstColumn.name" :class="cardColumnInfo.cardClass"
-      />
-    </div>
-    <div class="products-board__column">
-
-    </div>
-    <div class="products-board__column">
-
-    </div> -->
+    <BaseModal v-model:open="editedProduct.isOpened">
+      <ProductEditedCard :productId="editedProduct.editedProductId" :currentColumnId="getCurrentColumn(editedProduct.editedProductId)" />
+    </BaseModal>
   </div>
 </template>
 
 <script>
 import ProductCard from '@/components/ProductCard.vue'
+import BaseModal from '@/components/BaseModal.vue'
+import ProductEditedCard from '@/components/ProductEditCard.vue'
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 
 export default {
   name: 'HomeView',
   components: {
-    ProductCard
+    ProductCard,
+    BaseModal,
+    ProductEditedCard
   },
   setup () {
     const $store = useStore()
     $store.dispatch('loadProductsInfo')
 
-    const cardColumnInfo = ref({
-      cardId: 0,
-      cardClass: 'yellow'
-    })
+    const editedProduct = ref({ isOpened: false, editedProductId: 0 })
+
+    const getCurrentColumn = (productId) => {
+      for (const p of $store.state.productsInfo) {
+        if (p.id === productId) {
+          return String(p.columnId)
+        }
+      }
+      return '0'
+    }
 
     const columnsList = {
       firstColumn: {
         id: 1,
-        name: 'firstColumn',
+        name: 'Товары в наличии',
         cardsClass: 'yellow'
       },
       secondColumn: {
         id: 2,
-        name: 'secondColumn',
+        name: 'Хочу купить',
         cardsClass: 'red'
       },
       thirdColumn: {
         id: 3,
-        name: 'thirdColumn',
+        name: 'Уже куплено',
         cardsClass: 'blue'
       }
     }
@@ -76,16 +79,20 @@ export default {
     }
 
     return {
-      cardColumnInfo,
       columnsList,
+      editedProduct,
       onDragStart,
-      onDrop
+      onDrop,
+      getCurrentColumn
     }
   }
 }
 </script>
 
 <style lang="scss">
+  * {
+    box-sizing: border-box;
+  }
   .products-board {
     display: flex;
     width: 100%;
