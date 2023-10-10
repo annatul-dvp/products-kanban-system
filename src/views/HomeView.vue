@@ -8,7 +8,7 @@
       @dragover.prevent @dragenter.prevent>
       <h3>{{ column.name }}</h3>
       <ProductCard v-for="(product) in $store.state.productsInfo.filter(p => p.columnId === column.id)"
-        :key="product.id" :productData="product" :productId="product.id" v-model:editedProduct= "editedProduct"
+        :key="product.id" :productData="product" v-model:editedProduct= "editedProduct"
         @dragstart="onDragStart($event, product.id)"
         :class="column.cardsClass" draggable="true"/>
     </div>

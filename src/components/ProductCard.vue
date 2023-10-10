@@ -4,7 +4,7 @@
   <div class="p-card" v-else> -->
   <div class="p-card">
     <button class="btn p-card-btn p-card__edit-btn" @click="startEditingProduct"></button>
-    <button class="btn p-card-btn p-card__delete-btn"></button>
+    <button class="btn p-card-btn p-card__delete-btn" @click="toDeleteProduct"></button>
     <img class="p-card__img" :src="productData.image" alt="Заголовок" draggable="false">
     <h4 class="p-card__title">{{ productData.title }}</h4>
     <div class="p-card__category">{{ productData.category }}</div>
@@ -14,20 +14,35 @@
     </div>
     <p class="p-card__desc">{{ productData.description }}</p>
     <div class="p-card__price">{{ productData.pricePretty }}</div>
+
+    <!--Модальное окно при удалении продукта-->
+    <BaseModal v-model:open="isButtonCloseClicked">
+      <p v-if="!isDeleted">Вы уверены, что хотите удалить продукт?</p>
+      <button v-if="!isDeleted" @click="deleteProduct">Да</button>
+      <p v-if="deletingIsFailed">Ошибка! Не удалось удалить продукт.</p>
+      <p v-if="isDeleting">Идёт удаление продукта...</p>
+      <p v-if="isDeleted">Продукт удалён!</p>
+    </BaseModal>
   </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { ref, defineComponent } from 'vue'
+import { useStore } from 'vuex'
+import BaseModal from './BaseModal.vue'
+import { API_BASE_URL } from '../config'
 // import useProduct from '@/hooks/useProduct'
 
 export default defineComponent({
   props: {
     productData: { type: Object, required: true },
-    productId: { type: [Number, String], required: true },
-    columnId: { type: [Number, String], required: true },
+    // productId: { type: [Number, String], required: true },
+    // columnId: { type: [Number, String], required: true },
     editedProduct: { isOpened: { type: Boolean }, editedProductId: { type: Number } }
     // currentColumn: { type: String, required: true }
+  },
+  components: {
+    BaseModal
   },
   setup (props, { emit: $emit }) {
     // const {
@@ -41,11 +56,41 @@ export default defineComponent({
     // fetchProduct(props.productId, props.columnId)
     // getProduct(props.productId)
 
+    const $store = useStore()
+
     const startEditingProduct = () => {
       console.log(true)
-      console.log(props.productId)
+      console.log(props.productData.id)
 
-      $emit('update:editedProduct', { isOpened: true, editedProductId: props.productId })
+      $emit('update:editedProduct', { isOpened: true, editedProductId: props.productData.id })
+    }
+
+    const isButtonCloseClicked = ref(false)
+    const isDeleting = ref(false)
+    const isDeleted = ref(false)
+    const deletingIsFailed = ref(false)
+
+    /* Удалить продукт? */
+    const toDeleteProduct = () => {
+      isButtonCloseClicked.value = true
+    }
+
+    /* Удаление продукта */
+    const deleteProduct = () => {
+      isDeleting.value = true
+      isDeleted.value = false
+
+      fetch(`${API_BASE_URL}/products/${props.productData.id}`, {
+        method: 'DELETE'
+      })
+        .catch(() => { deletingIsFailed.value = true })
+        .then(res => res.json())
+        .then(resolve => {
+          console.log(resolve)
+          isDeleting.value = false
+          isDeleted.value = true
+          $store.dispatch('deleteProduct', resolve.id)
+        })
     }
 
     return {
@@ -53,7 +98,13 @@ export default defineComponent({
       // product,
       // rating,
       // productStatus,
-      startEditingProduct
+      isDeleting,
+      isDeleted,
+      deletingIsFailed,
+      isButtonCloseClicked,
+      startEditingProduct,
+      toDeleteProduct,
+      deleteProduct
     }
   }
 })

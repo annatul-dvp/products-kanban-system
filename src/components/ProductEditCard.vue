@@ -35,6 +35,9 @@
       </label>
       <button class="btn product-form__btn" type="submit">Сохранить изменения</button>
     </form>
+    <p v-if="savingChangesIsFailed">Ошибка! Не удалось сохранить изменения.</p>
+    <p v-if="savingChangesIsDone">Изменения сохранены</p>
+    <p v-if="savingChangesIsLoading">Сохраняем...</p>
   </div>
 </template>
 
@@ -67,13 +70,13 @@ export default defineComponent({
     const currentDescription = ref(currentProduct.description)
     const currentPrice = ref(currentProduct.price)
 
-    let savingChangesIsLoading = false
-    let savingChangesIsDone = false
-    let savingChangesIsFailed = false
+    const savingChangesIsLoading = ref(false)
+    const savingChangesIsDone = ref(false)
+    const savingChangesIsFailed = ref(false)
 
     function saveChanges () {
-      savingChangesIsLoading = true
-      savingChangesIsDone = false
+      savingChangesIsLoading.value = true
+      savingChangesIsDone.value = false
 
       fetch(`${API_BASE_URL}/products/${props.productId}`, {
         method: 'PATCH',
@@ -94,12 +97,12 @@ export default defineComponent({
           'Content-type': 'application/json; charset=UTF-8'
         }
       })
-        .catch(() => { savingChangesIsFailed = true })
+        .catch(() => { savingChangesIsFailed.value = true })
         .then(res => res.json())
         .then(resolve => {
           console.log(resolve)
-          savingChangesIsLoading = false
-          savingChangesIsDone = true
+          savingChangesIsLoading.value = false
+          savingChangesIsDone.value = true
           $store.dispatch('updateProductData', resolve)
         })
     }
