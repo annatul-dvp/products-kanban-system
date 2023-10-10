@@ -2,18 +2,21 @@
   <div class="home">
     {{ this.$store.state.productsInfo[0] }}
   </div>
+  <h2>Product Kanban Stystem</h2>
+  <button @click="createNewProduct">Создать новый продукт</button>
   <div class="products-board">
     <div v-for="column in columnsList" :key="column.id"
       @drop="onDrop($event, column.id)" class="droppable products-board__column"
       @dragover.prevent @dragenter.prevent>
       <h3>{{ column.name }}</h3>
       <ProductCard v-for="(product) in $store.state.productsInfo.filter(p => p.columnId === column.id)"
-        :key="product.id" :productData="product" v-model:editedProduct= "editedProduct"
+        :key="product.id" :productData="product" v-model:editedProduct= "editedProduct" v-model:isProductNew="isProductNew"
         @dragstart="onDragStart($event, product.id)"
         :class="column.cardsClass" draggable="true"/>
     </div>
     <BaseModal v-model:open="editedProduct.isOpened">
-      <ProductEditedCard :productId="editedProduct.editedProductId" :currentColumnId="getCurrentColumn(editedProduct.editedProductId)" />
+      <ProductEditedCard v-if="!isProductNew" :isProductNew="isProductNew" :productId="editedProduct.editedProductId" :currentColumnId="getCurrentColumn(editedProduct.editedProductId)" />
+      <ProductEditedCard v-if="isProductNew" :isProductNew="isProductNew" currentColumnId="'1'" />
     </BaseModal>
   </div>
 </template>
@@ -36,7 +39,17 @@ export default {
     const $store = useStore()
     $store.dispatch('loadProductsInfo')
 
+    const isProductNew = ref(false)
+
     const editedProduct = ref({ isOpened: false, editedProductId: 0 })
+
+    const createNewProduct = () => {
+      isProductNew.value = true
+      editedProduct.value = {
+        isOpened: true,
+        editedProductId: 0
+      }
+    }
 
     const getCurrentColumn = (productId) => {
       for (const p of $store.state.productsInfo) {
@@ -79,11 +92,13 @@ export default {
     }
 
     return {
+      isProductNew,
       columnsList,
       editedProduct,
       onDragStart,
       onDrop,
-      getCurrentColumn
+      getCurrentColumn,
+      createNewProduct
     }
   }
 }

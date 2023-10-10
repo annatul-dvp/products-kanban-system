@@ -35,11 +35,11 @@ export default createStore({
             price: updatedProductInfo.price,
             pricePretty: numberFormat(updatedProductInfo.price),
             description: updatedProductInfo.description,
-            category: updatedProductInfo.category
-            // rating: {
-            //   rate: updatedProductInfo.rating.rate,
-            //   count: updatedProductInfo.rating.count
-            // }
+            category: updatedProductInfo.category,
+            rating: {
+              rate: updatedProductInfo.rating.rate,
+              count: updatedProductInfo.rating.count
+            }
           }
         } else {
           return product
@@ -52,6 +52,14 @@ export default createStore({
       if (index > -1) {
         state.productsInfo.splice(index, 1)
       }
+    },
+    addingNewProduct (state, product) {
+      state.productsInfo.push({
+        ...product,
+        pricePretty: numberFormat(product.price),
+        columnId: 1
+      })
+      console.log(state.productsInfo)
     }
   },
   actions: {
@@ -74,6 +82,10 @@ export default createStore({
     deleteProduct (context, productToDeleteId) {
       console.log(productToDeleteId)
       return context.commit('deletingProduct', productToDeleteId)
+    },
+    addNewProduct (context, newProduct) {
+      console.log(newProduct)
+      return context.commit('addingNewProduct', newProduct)
     }
   },
   modules: {

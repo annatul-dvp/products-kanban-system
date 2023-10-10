@@ -35,33 +35,18 @@ import { API_BASE_URL } from '../config'
 
 export default defineComponent({
   props: {
-    productData: { type: Object, required: true },
-    // productId: { type: [Number, String], required: true },
-    // columnId: { type: [Number, String], required: true },
-    editedProduct: { isOpened: { type: Boolean }, editedProductId: { type: Number } }
-    // currentColumn: { type: String, required: true }
+    productData: { type: Object, required: true }
   },
   components: {
     BaseModal
   },
   setup (props, { emit: $emit }) {
-    // const {
-    //   product,
-    //   rating,
-    //   status: productStatus,
-    //   // fetchProduct,
-    //   getProduct
-    // } = useProduct()
-
-    // fetchProduct(props.productId, props.columnId)
-    // getProduct(props.productId)
-
     const $store = useStore()
 
     const startEditingProduct = () => {
       console.log(true)
       console.log(props.productData.id)
-
+      $emit('update:isProductNew', false)
       $emit('update:editedProduct', { isOpened: true, editedProductId: props.productData.id })
     }
 
@@ -94,10 +79,6 @@ export default defineComponent({
     }
 
     return {
-      // productD: props.productData,
-      // product,
-      // rating,
-      // productStatus,
       isDeleting,
       isDeleted,
       deletingIsFailed,
