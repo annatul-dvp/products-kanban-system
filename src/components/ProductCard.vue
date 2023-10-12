@@ -3,14 +3,14 @@
   <div class="p-card" v-else-if="productStatus.isFailed">Не удалось загрузить данные о товаре</div>
   <div class="p-card" v-else> -->
   <div class="p-card">
-    <button class="btn p-card-btn p-card__edit-btn" @click="startEditingProduct"></button>
-    <button class="btn p-card-btn p-card__delete-btn" @click="toDeleteProduct"></button>
+    <button class="btn btn-with-img p-card-btn p-card__edit-btn" @click="startEditingProduct"></button>
+    <button class="btn btn-with-img p-card-btn p-card__delete-btn" @click="toDeleteProduct"></button>
     <img class="p-card__img" :src="productData.image" alt="Заголовок" draggable="false">
     <h4 class="p-card__title">{{ productData.title }}</h4>
     <div class="p-card__category">{{ productData.category }}</div>
     <div class="p-card__rating">
-      <span class="p-card__score">{{ productData.rating.rate }}</span>
-      <span class="p-card__votes-amount">Количество голосов: {{ productData.rating.count }}</span>
+      <span class="p-card__score">Rating: {{ productData.rating.rate }}</span>
+      <span class="p-card__votes-amount">Votes: {{ productData.rating.count }}</span>
     </div>
     <p class="p-card__desc">{{ productData.description }}</p>
     <div class="p-card__price">{{ productData.pricePretty }}</div>
@@ -93,44 +93,69 @@ export default defineComponent({
 
 <style scoped lang="scss">
 
-  .btn {
-    border: none;
-    background-color: transparent;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    transition: all .2s ease-in-out;
-
-    &:hover {
-      transform: scale(1.1);
-    }
-
-    &:active {
-      transform: scale(.9);
-    }
-  }
   .p-card {
     position: relative;
     box-sizing: border-box;
     width: 90%;
+    height: auto;
     max-width: 100%;
     margin-bottom: 20px;
-    padding: 15px;
-    border: 1px solid red;
-    border-radius: 20px;
+    padding: 45px 15px 15px 15px;
+    box-shadow: 0px 5px 15px 2px rgba(34, 60, 80, 0.5);
+    // border: 1px solid red;
+    // border-radius: 00px;
+
+    @media (max-width: 380px) {
+      padding: 35px 5px 5px 5px;
+    }
 
     &__edit-btn {
       right: 45px;
       background-image: url(../assets/edit.svg);
+      @media (max-width: 380px) {
+        right: 30px;
+      }
     }
 
     &__delete-btn {
       right: 10px;
       background-image: url(../assets/close.svg);
+      @media (max-width: 380px) {
+        right: 5px;
+      }
     }
 
     &__img {
       width: 100%;
+    }
+
+    &__title {
+      font-size: 1.2rem;
+    }
+
+    &__category,
+    &__score,
+    &__votes-amount {
+      color: rgba(2, 21, 26, 0.8);
+      font-style: italic;
+    }
+
+    &__category {
+      margin-bottom: 2px;
+    }
+
+    &__score {
+      margin-right: 5px;
+    }
+
+    &__desc {
+      @media (max-width: 380px) {
+        word-break: break-all;
+      }
+    }
+
+    &:hover {
+      cursor: grab;
     }
   }
 
@@ -139,17 +164,39 @@ export default defineComponent({
     width: 25px;
     height: 25px;
     top: 10px;
+
+    @media (max-width: 768px) {
+      width: 20px;
+      height: 20px;
+    }
+
+    @media (max-width: 380px) {
+      width: 15px;
+      height: 15px;
+    }
   }
 
-  .yellow {
-    background-color: yellow;
+  .card-is-unsorted {
+    background-color: #fff8d8;
   }
 
-  .red {
-    background-color: red;
+  .card-is-wished {
+    background-color: #a6c4bc;
   }
 
-  .blue {
-    background-color: blue;
+  .card-is-achived {
+    background-color: #892143;
+  }
+
+  .products-board__third-column {
+    .p-card  {
+      color: #ffffff;
+
+      &__category,
+      &__score,
+      &__votes-amount {
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
   }
 </style>

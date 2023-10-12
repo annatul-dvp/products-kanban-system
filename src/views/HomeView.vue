@@ -1,14 +1,11 @@
 <template>
-  <div class="home">
-    {{ this.$store.state.productsInfo[0] }}
-  </div>
-  <h2>Product Kanban Stystem</h2>
-  <button @click="createNewProduct">Создать новый продукт</button>
+  <h2 class="page-title">Product Kanban Stystem</h2>
+  <button class="btn page-btn" @click="createNewProduct">Создать новый продукт</button>
   <div class="products-board">
     <div v-for="column in columnsList" :key="column.id"
-      @drop="onDrop($event, column.id)" class="droppable products-board__column"
+      @drop="onDrop($event, column.id)" class="droppable products-board__column" :class="column.columnClass"
       @dragover.prevent @dragenter.prevent>
-      <h3>{{ column.name }}</h3>
+      <h3 class="column-title">{{ column.name }}</h3>
       <ProductCard v-for="(product) in $store.state.productsInfo.filter(p => p.columnId === column.id)"
         :key="product.id" :productData="product" v-model:editedProduct= "editedProduct" v-model:isProductNew="isProductNew"
         @dragstart="onDragStart($event, product.id)"
@@ -64,17 +61,20 @@ export default {
       firstColumn: {
         id: 1,
         name: 'Товары в наличии',
-        cardsClass: 'yellow'
+        columnClass: 'products-board__first-column',
+        cardsClass: 'card-is-unsorted'
       },
       secondColumn: {
         id: 2,
         name: 'Хочу купить',
-        cardsClass: 'red'
+        columnClass: 'products-board__second-column',
+        cardsClass: 'card-is-wished'
       },
       thirdColumn: {
         id: 3,
         name: 'Уже куплено',
-        cardsClass: 'blue'
+        columnClass: 'products-board__third-column',
+        cardsClass: 'card-is-achived'
       }
     }
 
@@ -108,6 +108,62 @@ export default {
   * {
     box-sizing: border-box;
   }
+
+  html {
+    font-size: 18px;
+
+    @media (max-width: 768px) {
+      font-size: 12px;
+    }
+
+    @media (max-width: 380px) {
+      font-size: 8px;
+    }
+  }
+
+  .btn {
+    border: none;
+    font-family: Georgia, serif;
+    background-color: transparent;
+    transition: all .3s ease-in-out;
+    &:hover {
+      cursor: pointer;
+      transform: scale(1.1);
+    }
+
+    &:active {
+      transform: scale(.9);
+    }
+  }
+
+  .btn-with-img {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+  }
+
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .page-btn {
+    width: 30%;
+    margin-bottom: 20px;
+    padding: 20px 50px;
+    border-radius: 15px;
+    background-color: #02151a;
+    color: #ffffff;
+
+    @media (max-width: 768px) {
+      width: 50%;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 380px) {
+      width: 100%;
+    }
+  }
+
   .products-board {
     display: flex;
     width: 100%;
@@ -118,11 +174,46 @@ export default {
       flex-direction: column;
       align-items: center;
       flex-grow: 1;
-      width: 33%;
+      // flex-shrink: 1;
+      // flex-basis: 20%;
+      width: 30%;
+      border-radius: 50px;
+
+      @media (max-width: 768px) {
+        border-radius: 10px;
+      }
+    }
+    &__column:first-child {
+      margin-left: 2%;
+      margin-right: 1%;
     }
 
-    &__column:not(:last-child) {
-      border-right: 1px solid black;
+    &__column:last-child {
+      margin-left: 1%;
+      margin-right: 2%;
     }
+
+    &__column:not(:first-child),
+    &__column:not(:last-child){
+      margin-left: 1%;
+      margin-right: 1%;
+    }
+
+    &__first-column {
+      background-color: rgba(99, 189, 153, 1);
+    }
+
+    &__second-column {
+      background-color: rgba(234, 122, 88, 1);
+    }
+
+    &__third-column {
+      background-color: rgba(8, 120, 145, 1);
+    }
+
+    .column-title {
+      font-size: 1.5rem;
+    }
+
   }
 </style>

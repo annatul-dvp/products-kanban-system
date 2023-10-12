@@ -226,7 +226,8 @@ export default defineComponent({
     padding: 20px 30px;
     border-radius: 10px;
     border: none;
-    background-color: #91b4c9;
+    background-color: #02151a;
+    color: #ffffff;
     font-family: Georgia, serif;
     font-size: 1rem;
   }
