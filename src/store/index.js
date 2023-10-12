@@ -60,6 +60,20 @@ export default createStore({
         columnId: 1
       })
       console.log(state.productsInfo)
+    },
+    filtering (state, { type, columnId }) {
+      const filteredproducts = state.productsInfo.filter(p => p.columnId === columnId)
+      const unfilteredProducts = state.productsInfo.filter(p => p.columnId !== columnId)
+
+      if (parseInt(type) === 0) {
+        /* Фильтрация сверху вниз от меньшего рейтинга к большему */
+        filteredproducts.sort((a, b) => a.rating.rate - b.rating.rate)
+      } else {
+        /* Фильтрация снизу вверх от меньшего рейтинга к большему */
+        filteredproducts.sort((a, b) => b.rating.rate - a.rating.rate)
+      }
+
+      state.productsInfo = unfilteredProducts.concat(filteredproducts)
     }
   },
   actions: {
@@ -86,6 +100,9 @@ export default createStore({
     addNewProduct (context, newProduct) {
       console.log(newProduct)
       return context.commit('addingNewProduct', newProduct)
+    },
+    toFilterProducts (context, { type, columnId }) {
+      return context.commit('filtering', { type, columnId })
     }
   },
   modules: {

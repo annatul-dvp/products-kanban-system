@@ -18,7 +18,7 @@
     <!--Модальное окно при удалении продукта-->
     <BaseModal v-model:open="isButtonCloseClicked">
       <p v-if="!isDeleted">Вы уверены, что хотите удалить продукт?</p>
-      <button v-if="!isDeleted" @click="deleteProduct">Да</button>
+      <button class="modal-btn" v-if="!isDeleted" @click="deleteProduct">Да</button>
       <p v-if="deletingIsFailed">Ошибка! Не удалось удалить продукт.</p>
       <p v-if="isDeleting">Идёт удаление продукта...</p>
       <p v-if="isDeleted">Продукт удалён!</p>
@@ -44,8 +44,6 @@ export default defineComponent({
     const $store = useStore()
 
     const startEditingProduct = () => {
-      console.log(true)
-      console.log(props.productData.id)
       $emit('update:isProductNew', false)
       $emit('update:editedProduct', { isOpened: true, editedProductId: props.productData.id })
     }
@@ -71,7 +69,6 @@ export default defineComponent({
         .catch(() => { deletingIsFailed.value = true })
         .then(res => res.json())
         .then(resolve => {
-          console.log(resolve)
           isDeleting.value = false
           isDeleted.value = true
           $store.dispatch('deleteProduct', resolve.id)
@@ -131,6 +128,10 @@ export default defineComponent({
 
     &__title {
       font-size: 1.2rem;
+
+      @media (max-width: 960px) {
+        word-break: break-all;
+      }
     }
 
     &__category,
@@ -197,6 +198,26 @@ export default defineComponent({
       &__votes-amount {
         color: rgba(255, 255, 255, 0.8);
       }
+    }
+  }
+
+  .modal-btn {
+    min-width: 180px;
+    width: 40%;
+    padding: 20px 30px;
+    border-radius: 10px;
+    border: none;
+    background-color: #02151a;
+    color: #ffffff;
+    font-family: Georgia, serif;
+    font-size: 1rem;
+
+    &:hover {
+      background-color: #b31d14;
+    }
+
+    &:active {
+      background-color: #3d0502;
     }
   }
 </style>

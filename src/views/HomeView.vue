@@ -6,6 +6,10 @@
       @drop="onDrop($event, column.id)" class="droppable products-board__column" :class="column.columnClass"
       @dragover.prevent @dragenter.prevent>
       <h3 class="column-title">{{ column.name }}</h3>
+      <div class="sorting">
+        <button class="btn btn-with-img sorting__btn sorting__btn_down" @click="toFilter(0, column.id)"></button>
+        <button class="btn btn-with-img sorting__btn sorting__btn_up" @click="toFilter(1, column.id)"></button>
+      </div>
       <ProductCard v-for="(product) in $store.state.productsInfo.filter(p => p.columnId === column.id)"
         :key="product.id" :productData="product" v-model:editedProduct= "editedProduct" v-model:isProductNew="isProductNew"
         @dragstart="onDragStart($event, product.id)"
@@ -48,15 +52,6 @@ export default {
       }
     }
 
-    const getCurrentColumn = (productId) => {
-      for (const p of $store.state.productsInfo) {
-        if (p.id === productId) {
-          return String(p.columnId)
-        }
-      }
-      return '0'
-    }
-
     const columnsList = {
       firstColumn: {
         id: 1,
@@ -78,6 +73,19 @@ export default {
       }
     }
 
+    const getCurrentColumn = (productId) => {
+      for (const p of $store.state.productsInfo) {
+        if (p.id === productId) {
+          return String(p.columnId)
+        }
+      }
+      return '0'
+    }
+
+    const toFilter = (type, columnId) => {
+      $store.dispatch('toFilterProducts', { type, columnId })
+    }
+
     function onDragStart (e, itemId) {
       e.dataTransfer.dropEffect = 'move'
       e.dataTransfer.effectAllowed = 'move'
@@ -86,8 +94,6 @@ export default {
 
     function onDrop (e, categoryId) {
       const itemId = parseInt(e.dataTransfer.getData('itemId'))
-      console.log(itemId)
-      console.log(categoryId)
       $store.dispatch('updateProductColumn', { productId: itemId, newColumnId: categoryId })
     }
 
@@ -98,7 +104,8 @@ export default {
       onDragStart,
       onDrop,
       getCurrentColumn,
-      createNewProduct
+      createNewProduct,
+      toFilter
     }
   }
 }
@@ -111,6 +118,10 @@ export default {
 
   html {
     font-size: 18px;
+
+    @media (max-width: 960px) {
+      font-size: 16px;
+      }
 
     @media (max-width: 768px) {
       font-size: 12px;
@@ -125,6 +136,7 @@ export default {
     border: none;
     font-family: Georgia, serif;
     background-color: transparent;
+    transform-origin: center;
     transition: all .3s ease-in-out;
     &:hover {
       cursor: pointer;
@@ -166,7 +178,7 @@ export default {
 
   .products-board {
     display: flex;
-    width: 100%;
+    width: 90%;
     height: auto;
 
     &__column {
@@ -213,6 +225,29 @@ export default {
 
     .column-title {
       font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+
+    .sorting {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 25px;
+      margin-bottom: 15px;
+
+      &__btn {
+        width: 25px;
+        height: 25px;
+      }
+
+      &__btn_down {
+        background-image: url(../assets/arrow-down.svg);
+      }
+
+      &__btn_up {
+        background-image: url(../assets/arrow-up.svg);
+      }
     }
 
   }

@@ -33,8 +33,8 @@
         <span class="product-form__input-title">Цена товара:</span>
         <input class="product-form__input" type="text" v-model="currentPrice">
       </label>
-      <button v-if="!isProductNew" class="btn product-form__btn" type="submit">Сохранить изменения</button>
-      <button v-if="isProductNew" class="btn product-form__btn" type="submit">Создать</button>
+      <button v-if="!isProductNew" class="modal-btn product-form__btn" type="submit">Сохранить изменения</button>
+      <button v-if="isProductNew" class="modal-btn product-form__btn" type="submit">Создать</button>
     </form>
     <p v-if="savingChangesIsFailed">Ошибка! Не удалось сохранить изменения.</p>
     <p v-if="savingChangesIsDone">Изменения сохранены</p>
@@ -113,7 +113,6 @@ export default defineComponent({
           .catch(() => { savingChangesIsFailed.value = true })
           .then(res => res.json())
           .then(resolve => {
-            console.log(resolve)
             savingChangesIsLoading.value = false
             savingChangesIsDone.value = true
             $store.dispatch('updateProductData', {
@@ -148,7 +147,6 @@ export default defineComponent({
           .catch(() => { savingChangesIsFailed.value = true })
           .then(res => res.json())
           .then(resolve => {
-            console.log(resolve)
             savingChangesIsLoading.value = false
             savingChangesIsDone.value = true
             $store.dispatch('addNewProduct', {
@@ -220,7 +218,7 @@ export default defineComponent({
     }
   }
 
-  .btn {
+  .modal-btn {
     min-width: 180px;
     width: 40%;
     padding: 20px 30px;
@@ -230,5 +228,13 @@ export default defineComponent({
     color: #ffffff;
     font-family: Georgia, serif;
     font-size: 1rem;
+
+    &:hover {
+      background-color: #b31d14;
+    }
+
+    &:active {
+      background-color: #3d0502;
+    }
   }
 </style>
